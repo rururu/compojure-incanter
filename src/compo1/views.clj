@@ -25,7 +25,7 @@
      [:h1 "Incanter Plots"]
      [:ol
       [:li [:a {:href "/normal"} "Normal Plot"]]
-      [:li "Two"]]]))
+      [:li [:a {:href "/func"} "Function Plot"]]]]))  
       
 (defn to-in-stream [chart]
 	(let [out-stream (ByteArrayOutputStream.)]
@@ -46,6 +46,18 @@
                  :x-label (str "sample-size = " size
                                ", mean = " m
                                ", sd = " s))
+          in-stream (to-in-stream chart)]
+      {:status 200
+       :headers {"Content-Type" "image/png"}
+       :body in-stream}))
+       
+(defn gen-func-plot-png [func from to]
+	(let [fu1 (if (empty? func) "sin" func)
+	      fun (symbol "incanter.core" fu1)
+		  left (if (empty? from) -3.14 (Double. from))
+		  right (if (empty? to) 3.14 (Double. to))
+		  call `(function-plot ~fun ~left ~right :title "Function Plot")
+		  chart (eval call)
           in-stream (to-in-stream chart)]
       {:status 200
        :headers {"Content-Type" "image/png"}
